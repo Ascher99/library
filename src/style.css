@@ -1,0 +1,1036 @@
+/* ==========================================================================
+   Design Tokens & Theme Settings (Warm Bookish Palette)
+   ========================================================================== */
+
+:root {
+  /* Typography */
+  font-family: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  --font-serif: 'Playfair Display', Georgia, serif;
+  
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Borders and Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  
+  --header-height: 72px;
+  
+}
+
+/* ==========================================================================
+   Themes Configuration
+   ========================================================================== */
+
+/* 1. Dark Theme */
+.theme-dark {
+  --bg-app: #090d16;
+  --bg-card: #131926;
+  --bg-input: #1a2333;
+  --bg-sidebar: #0e1420;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: rgba(99, 102, 241, 0.15);
+  
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  
+  --border: #222d42;
+  --border-focus: #4338ca;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  
+  --scroll-thumb: #1e293b;
+  --scroll-track: #090d16;
+}
+
+/* 2. Light Theme */
+.theme-light {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #f1f5f9;
+  --bg-sidebar: #f1f5f9;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  --accent: #4f46e5;
+  --accent-hover: #3730a3;
+  --accent-light: rgba(79, 70, 229, 0.1);
+  
+  --danger: #e11d48;
+  --danger-hover: #be123c;
+  
+  --border: #e2e8f0;
+  --border-focus: #818cf8;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+  
+  --scroll-thumb: #cbd5e1;
+  --scroll-track: #f8fafc;
+}
+
+/* 3. Sepia Theme (Warm Bookish - Default) */
+.theme-sepia {
+  --bg-app: #f7f4ef;          /* --background */
+  --bg-card: #fcfaf7;         /* --card */
+  --bg-input: #ffffff;        /* Custom white input inside warm container */
+  --bg-sidebar: #fcfaf7;      
+  
+  --text-primary: #2b2622;    /* --title */
+  --text-secondary: #7c736a;  /* --text */
+  --text-muted: #8c8278;      
+  
+  --accent: #27694d;          /* --green */
+  --accent-hover: #1e4d38;    
+  --accent-light: #eaf0ed;    /* --favorite */
+  
+  --danger: #ef4444;          /* --red */
+  --danger-hover: #dc2626;
+  
+  --border: #E7E2DA;          /* --border */
+  --border-focus: #27694d;    
+  
+  --shadow-sm: 0 1px 2px 0 rgba(196, 184, 168, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(196, 184, 168, 0.4), 0 2px 4px -2px rgba(196, 184, 168, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(196, 184, 168, 0.5), 0 4px 6px -4px rgba(196, 184, 168, 0.3);
+  
+  --scroll-thumb: #c4b8a8;    /* --shadow */
+  --scroll-track: #f7f4ef;    /* --background */
+}
+
+/* ==========================================================================
+   Global Reset & Defaults
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+button, input {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Header Design
+   ========================================================================== */
+
+.app-header {
+  height: var(--header-height);
+  background-color: var(--bg-app);
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.header-container {
+  max-width: 1400px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--accent);
+  transition: color var(--transition-normal);
+}
+
+.logo-text h1 {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.logo-text .subtitle {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: -2px;
+  transition: color var(--transition-normal);
+}
+
+/* Theme Switcher Button Group */
+.theme-switcher {
+  display: flex;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  gap: 2px;
+  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.theme-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.theme-btn:hover {
+  color: var(--text-primary);
+}
+
+.theme-btn.active {
+  background-color: var(--bg-card);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   Hero search Section
+   ========================================================================== */
+
+.hero-section {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 580px;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+/* Centered Search Bar Container */
+.search-bar-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 580px;
+}
+
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+#search-input {
+  width: 100%;
+  padding: 12px 38px 12px 42px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#search-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(39, 105, 77, 0.08);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+}
+
+.clear-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+}
+
+.primary-btn {
+  background-color: var(--accent);
+  color: #ffffff;
+  padding: 0 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.primary-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+.primary-btn:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   Main Application Layout
+   ========================================================================== */
+
+.main-layout {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Left content column */
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Author filters bar */
+.search-filters {
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
+  animation: fadeIn var(--transition-normal) ease;
+}
+
+.filter-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 320px;
+}
+
+.filter-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+#filter-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: border-color var(--transition-fast);
+}
+
+#filter-input:focus {
+  border-color: var(--border-focus);
+}
+
+/* ==========================================================================
+   Status and Error Handling UI
+   ========================================================================== */
+
+.status-box {
+  padding: 60px 40px;
+  text-align: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-normal);
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 450px;
+}
+
+#status-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Book Cards Grid
+   ========================================================================== */
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* Grid card card */
+.book-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  animation: fadeIn var(--transition-normal) ease forwards;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-cover-container {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background-color: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.book-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.book-card:hover .book-cover {
+  transform: scale(1.03);
+}
+
+/* Premium No-Cover CSS Placeholder */
+.no-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #eeebe4 0%, var(--border) 100%);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+.no-cover-placeholder::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: rgba(42, 38, 34, 0.04);
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.no-cover-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+}
+
+.no-cover-title {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.no-cover-text {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Floating round heart button */
+.fav-toggle-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  border: none;
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.fav-toggle-btn:hover {
+  transform: scale(1.1);
+  color: var(--danger);
+  background-color: #ffffff;
+}
+
+.fav-toggle-btn.saved {
+  color: var(--danger);
+}
+
+.fav-toggle-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: transform var(--transition-fast);
+}
+
+.fav-toggle-btn.saved svg {
+  fill: var(--danger);
+  stroke: var(--danger);
+}
+
+.fav-toggle-btn:active svg {
+  transform: scale(1.25);
+}
+
+/* Card Content Details */
+.card-details {
+  padding: 14px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary);
+  height: 2.6em;
+}
+
+.card-author {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-year {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Favorites Sidebar Panel
+   ========================================================================== */
+
+.favorites-section {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal);
+}
+
+.favorites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.favorites-title-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.favorites-title-container h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.favorites-count-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: -2px;
+}
+
+/* Sidebar filtering input */
+.favorites-filter-container {
+  margin-bottom: 16px;
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+#favorites-filter-input {
+  width: 100%;
+  padding: 6px 12px 6px 32px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-size: 0.8rem;
+  transition: border-color var(--transition-fast);
+}
+
+#favorites-filter-input:focus {
+  border-color: var(--border-focus);
+}
+
+/* Favorites Lists */
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+/* Favorites Empty State styling */
+.favorites-empty-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 40px 10px;
+  color: var(--text-muted);
+}
+
+.empty-books-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.favorites-empty-msg p {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Compact Favorites Card Item */
+.fav-item {
+  display: flex;
+  gap: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  position: relative;
+  align-items: center;
+  transition: border-color var(--transition-fast);
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.fav-item:hover {
+  border-color: var(--border-focus);
+}
+
+.fav-item-cover {
+  width: 44px;
+  height: 66px;
+  background-color: var(--bg-input);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.fav-item-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fav-item-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-input) 0%, var(--border) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.fav-item-cover-placeholder svg {
+  width: 16px;
+  height: 16px;
+}
+
+.fav-item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.fav-item-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-item-author {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-item-year {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Red heart icon on compact item */
+.remove-fav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--danger);
+  transition: transform var(--transition-fast);
+}
+
+.remove-fav-btn:hover {
+  transform: scale(1.1);
+}
+
+.remove-fav-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.app-footer-bar {
+  text-align: center;
+  padding: 40px 24px;
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Mobile Responsive Buttons & Layout
+   ========================================================================== */
+
+.mobile-only {
+  display: none;
+}
+
+.floating-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background-color: var(--accent);
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(39, 105, 77, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 99;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.floating-btn svg {
+  fill: currentColor;
+}
+
+.floating-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+.floating-btn:active {
+  transform: scale(0.95);
+}
+
+.floating-btn .badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--danger);
+  border: 2px solid var(--bg-app);
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-input);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Slide-out Drawer behavior for Favorites on tablets/mobiles */
+  .favorites-section {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid var(--border);
+    z-index: 1000;
+    transform: translateX(105%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .favorites-section.open {
+    transform: translateX(0);
+  }
+
+  /* Blur overlay behind drawer */
+  .drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(42, 38, 34, 0.35);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    animation: fadeIn var(--transition-fast) ease;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .search-bar-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .primary-btn {
+    height: 44px;
+    padding: 0;
+  }
+  
+  .main-layout {
+    padding: 0 16px 20px;
+  }
+  
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  
+  .card-details {
+    padding: 10px 6px;
+  }
+  
+  .card-title {
+    font-size: 0.8rem;
+    height: 2.6em;
+  }
+  
+  .card-author {
+    font-size: 0.72rem;
+  }
+}
