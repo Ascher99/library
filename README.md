@@ -35,7 +35,7 @@ library/
 ├── index.html                # Main application HTML file
 ├── package.json              # Script directives and developer tools dependencies (Vite)
 ├── vite.config.js            # Configuration settings for Vite bundling and CSS injection
-└── README.md                 # Project documentation (this file)
+└── README.md                 # Project documentation 
 ```
 
 ---
