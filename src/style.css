@@ -505,6 +505,8 @@ a:hover {
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   animation: fadeIn var(--transition-normal) ease forwards;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 340px;
 }
 
 .book-card:hover {

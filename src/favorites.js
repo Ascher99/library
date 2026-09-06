@@ -1,10 +1,14 @@
 const LOCAL_STORAGE_KEY = 'lumina_favorites';
 
+// In-memory cache to prevent constant localStorage reads & JSON parsing
+let favoritesCache = initFavoritesCache();
+let favoriteIdsSet = new Set(favoritesCache.map(f => f.id));
+
 /**
- * Retrieves the array of favorite books from localStorage.
- * @returns {Array<{id: string, title: string, authors: Array<string>, publishYear: (number|string), coverId: ?number}>}
+ * Initializes favorites cache from localStorage on load.
+ * @returns {Array} List of favorite books
  */
-export function getFavorites() {
+function initFavoritesCache() {
   try {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
     return data ? JSON.parse(data) : [];
@@ -15,12 +19,22 @@ export function getFavorites() {
 }
 
 /**
- * Saves the array of favorite books to localStorage.
+ * Retrieves the array of favorite books.
+ * @returns {Array<{id: string, title: string, authors: Array<string>, publishYear: (number|string), coverId: ?number}>}
+ */
+export function getFavorites() {
+  return [...favoritesCache];
+}
+
+/**
+ * Saves the array of favorite books to localStorage and updates in-memory cache.
  * @param {Array} favorites The favorites list
  */
 function saveFavorites(favorites) {
+  favoritesCache = favorites;
+  favoriteIdsSet = new Set(favorites.map(f => f.id));
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(favorites));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(favoritesCache));
   } catch (e) {
     console.error('Error writing favorites to localStorage:', e);
   }
@@ -32,12 +46,11 @@ function saveFavorites(favorites) {
  * @returns {Array} The updated favorites list
  */
 export function addFavorite(book) {
-  const favorites = getFavorites();
-  if (!favorites.some(f => f.id === book.id)) {
-    favorites.push(book);
-    saveFavorites(favorites);
+  if (!favoriteIdsSet.has(book.id)) {
+    const updated = [...favoritesCache, book];
+    saveFavorites(updated);
   }
-  return favorites;
+  return [...favoritesCache];
 }
 
 /**
@@ -46,18 +59,19 @@ export function addFavorite(book) {
  * @returns {Array} The updated favorites list
  */
 export function removeFavorite(bookId) {
-  let favorites = getFavorites();
-  favorites = favorites.filter(f => f.id !== bookId);
-  saveFavorites(favorites);
-  return favorites;
+  if (favoriteIdsSet.has(bookId)) {
+    const updated = favoritesCache.filter(f => f.id !== bookId);
+    saveFavorites(updated);
+  }
+  return [...favoritesCache];
 }
 
 /**
- * Checks if a book is already in the favorites.
+ * Checks if a book is already in the favorites (O(1) Set lookup).
  * @param {string} bookId The book ID
  * @returns {boolean} True if favorited
  */
 export function isFavorite(bookId) {
-  const favorites = getFavorites();
-  return favorites.some(f => f.id === bookId);
+  return favoriteIdsSet.has(bookId);
 }
+

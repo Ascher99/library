@@ -1,4 +1,5 @@
 import { FavoriteItem } from './FavoriteItem.js';
+import { debounce } from '../utils.js';
 
 export class FavoritesDrawer {
   /**
@@ -49,11 +50,13 @@ export class FavoritesDrawer {
     // Close via Close Button
     this.closeBtn.addEventListener('click', () => this.toggle(true));
 
-    // Filter input typing
-    this.filterInput.addEventListener('input', (e) => {
+    // Filter input typing (debounced)
+    const handleFilterInput = debounce((e) => {
       this.authorFilter = e.target.value;
       this.render();
-    });
+    }, 150);
+
+    this.filterInput.addEventListener('input', handleFilterInput);
 
     // Handle screen resize, auto close on desktop view
     window.addEventListener('resize', () => {
@@ -142,12 +145,15 @@ export class FavoritesDrawer {
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     filteredFavs.forEach(book => {
       const favItemInstance = new FavoriteItem(book, {
         onRemoveFavorite: this.onRemoveFavorite
       });
       
-      this.list.appendChild(favItemInstance.render());
+      fragment.appendChild(favItemInstance.render());
     });
+    this.list.appendChild(fragment);
   }
 }
+

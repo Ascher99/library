@@ -1,4 +1,5 @@
 import { BookCard } from './BookCard.js';
+import { debounce } from '../utils.js';
 
 export class ResultsGrid {
   /**
@@ -35,10 +36,12 @@ export class ResultsGrid {
   }
 
   init() {
-    this.filterInput.addEventListener('input', (e) => {
+    const handleFilterInput = debounce((e) => {
       this.authorFilter = e.target.value;
       this.render();
-    });
+    }, 150);
+
+    this.filterInput.addEventListener('input', handleFilterInput);
   }
 
   /**
@@ -127,15 +130,17 @@ export class ResultsGrid {
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     filteredDocs.forEach(book => {
       const isSaved = this.isFavorite(book.id);
       const cardInstance = new BookCard(book, isSaved, {
         onToggleFavorite: this.onToggleFavorite
       });
       
-      this.grid.appendChild(cardInstance.render());
+      fragment.appendChild(cardInstance.render());
       this.cardInstances.push(cardInstance);
     });
+    this.grid.appendChild(fragment);
   }
 
   /**
