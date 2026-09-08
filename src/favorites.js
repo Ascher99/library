@@ -6,12 +6,18 @@ let favoriteIdsSet = new Set(favoritesCache.map(f => f.id));
 
 /**
  * Initializes favorites cache from localStorage on load.
+ * Ensures all objects have fallback fields for readingStatus and notes.
  * @returns {Array} List of favorite books
  */
 function initFavoritesCache() {
   try {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    const parsed = data ? JSON.parse(data) : [];
+    return parsed.map(b => ({
+      readingStatus: 'want_to_read',
+      notes: '',
+      ...b
+    }));
   } catch (e) {
     console.error('Error reading favorites from localStorage:', e);
     return [];
@@ -20,10 +26,19 @@ function initFavoritesCache() {
 
 /**
  * Retrieves the array of favorite books.
- * @returns {Array<{id: string, title: string, authors: Array<string>, publishYear: (number|string), coverId: ?number}>}
+ * @returns {Array}
  */
 export function getFavorites() {
   return [...favoritesCache];
+}
+
+/**
+ * Retrieves a single favorite book by ID.
+ * @param {string} bookId 
+ * @returns {Object|null}
+ */
+export function getFavoriteById(bookId) {
+  return favoritesCache.find(f => f.id === bookId) || null;
 }
 
 /**
@@ -47,8 +62,31 @@ function saveFavorites(favorites) {
  */
 export function addFavorite(book) {
   if (!favoriteIdsSet.has(book.id)) {
-    const updated = [...favoritesCache, book];
+    const bookToAdd = {
+      readingStatus: 'want_to_read',
+      notes: '',
+      ...book
+    };
+    const updated = [...favoritesCache, bookToAdd];
     saveFavorites(updated);
+  }
+  return [...favoritesCache];
+}
+
+/**
+ * Updates metadata (reading status, personal notes) for a favorited book.
+ * @param {string} bookId The book ID
+ * @param {Object} meta Updates object ({ readingStatus, notes })
+ * @returns {Array} Updated favorites list
+ */
+export function updateFavoriteMeta(bookId, meta) {
+  const index = favoritesCache.findIndex(f => f.id === bookId);
+  if (index !== -1) {
+    favoritesCache[index] = {
+      ...favoritesCache[index],
+      ...meta
+    };
+    saveFavorites([...favoritesCache]);
   }
   return [...favoritesCache];
 }
@@ -74,4 +112,5 @@ export function removeFavorite(bookId) {
 export function isFavorite(bookId) {
   return favoriteIdsSet.has(bookId);
 }
+
 

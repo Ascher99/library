@@ -13,12 +13,24 @@ export class FavoritesDrawer {
    * @param {HTMLInputElement} elements.filterInput Filter input element
    * @param {HTMLElement} elements.emptyMsg The empty message container
    * @param {HTMLElement} elements.list The favorites list items container
+  /**
+   * @param {Object} elements DOM elements
+   * @param {HTMLElement} elements.section The main side panel container
+   * @param {HTMLElement} elements.badgeSubtitle Header subtitle count label
+   * @param {HTMLElement} elements.fabBadge Mobile FAB badge label
+   * @param {HTMLElement} elements.closeBtn Mobile drawer close button
+   * @param {HTMLElement} elements.toggleFab Mobile floating action button
+   * @param {HTMLElement} elements.filterContainer Container for search filter input
+   * @param {HTMLInputElement} elements.filterInput Filter input element
+   * @param {HTMLElement} elements.emptyMsg The empty message container
+   * @param {HTMLElement} elements.list The favorites list items container
    * @param {Object} callbacks Event callbacks
    * @param {Function} callbacks.onRemoveFavorite Triggered when removing a book
+   * @param {Function} callbacks.onSelectBook Triggered when clicking a favorited item
    */
   constructor(
     { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, emptyMsg, list },
-    { onRemoveFavorite }
+    { onRemoveFavorite, onSelectBook }
   ) {
     this.section = section;
     this.badgeSubtitle = badgeSubtitle;
@@ -31,6 +43,7 @@ export class FavoritesDrawer {
     this.list = list;
 
     this.onRemoveFavorite = onRemoveFavorite;
+    this.onSelectBook = onSelectBook;
     
     this.favorites = [];
     this.authorFilter = '';
@@ -148,7 +161,8 @@ export class FavoritesDrawer {
     const fragment = document.createDocumentFragment();
     filteredFavs.forEach(book => {
       const favItemInstance = new FavoriteItem(book, {
-        onRemoveFavorite: this.onRemoveFavorite
+        onRemoveFavorite: this.onRemoveFavorite,
+        onSelectBook: this.onSelectBook
       });
       
       fragment.appendChild(favItemInstance.render());
@@ -156,4 +170,5 @@ export class FavoritesDrawer {
     this.list.appendChild(fragment);
   }
 }
+
 

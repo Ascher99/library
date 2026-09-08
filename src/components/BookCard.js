@@ -1,4 +1,4 @@
-import { getHeartIconSvg } from './icons.js';
+import { getHeartIconSvg, getNoteIconSvg } from './icons.js';
 
 export class BookCard {
   /**
@@ -6,11 +6,13 @@ export class BookCard {
    * @param {boolean} isSaved Initial favorite status
    * @param {Object} callbacks Event callbacks
    * @param {Function} callbacks.onToggleFavorite Callback when favorite button is clicked
+   * @param {Function} callbacks.onSelectBook Callback when card is clicked to view details
    */
-  constructor(book, isSaved, { onToggleFavorite }) {
+  constructor(book, isSaved, { onToggleFavorite, onSelectBook }) {
     this.book = book;
     this.isSaved = isSaved;
     this.onToggleFavorite = onToggleFavorite;
+    this.onSelectBook = onSelectBook;
     this.element = null;
   }
 
@@ -43,16 +45,32 @@ export class BookCard {
 
     const authorsString = this.book.authors.length > 0 ? this.book.authors.join(', ') : 'Unknown Author';
 
+    let statusBadgeHtml = '';
+    if (this.isSaved && this.book.readingStatus) {
+      const statusLabels = {
+        want_to_read: 'Want to Read',
+        reading: 'Reading',
+        completed: 'Completed'
+      };
+      statusBadgeHtml = `<span class="card-status-badge status-${this.book.readingStatus}">${statusLabels[this.book.readingStatus]}</span>`;
+    }
+
+    const hasNotes = this.isSaved && Boolean(this.book.notes && this.book.notes.trim());
+
     card.innerHTML = `
       <div class="card-cover-container">
         ${coverHtml}
         ${placeholderHtml}
+        ${statusBadgeHtml}
         <button class="fav-toggle-btn ${this.isSaved ? 'saved' : ''}" aria-label="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}" title="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}">
           ${getHeartIconSvg()}
         </button>
       </div>
       <div class="card-details">
-        <h4 class="card-title" title="${this.book.title}">${this.book.title}</h4>
+        <h4 class="card-title" title="${this.book.title}">
+          ${this.book.title}
+          ${hasNotes ? `<span class="note-indicator-icon" title="Contains personal note">${getNoteIconSvg()}</span>` : ''}
+        </h4>
         <p class="card-author" title="${authorsString}">${authorsString}</p>
         <p class="card-year">${this.book.publishYear}</p>
       </div>
@@ -63,6 +81,12 @@ export class BookCard {
       e.stopPropagation();
       if (this.onToggleFavorite) {
         this.onToggleFavorite(this.book);
+      }
+    });
+
+    card.addEventListener('click', () => {
+      if (this.onSelectBook) {
+        this.onSelectBook(this.book);
       }
     });
 
@@ -92,3 +116,4 @@ export class BookCard {
     }
   }
 }
+

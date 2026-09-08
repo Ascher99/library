@@ -2,12 +2,13 @@
 import './style.css';
 
 import { searchBooks } from './api.js';
-import { getFavorites, addFavorite, removeFavorite, isFavorite } from './favorites.js';
+import { getFavorites, addFavorite, removeFavorite, isFavorite, getFavoriteById, updateFavoriteMeta } from './favorites.js';
 
 import { ThemeSwitcher } from './components/ThemeSwitcher.js';
 import { SearchBar } from './components/SearchBar.js';
 import { ResultsGrid } from './components/ResultsGrid.js';
 import { FavoritesDrawer } from './components/FavoritesDrawer.js';
+import { BookModal } from './components/BookModal.js';
 
 // ==========================================================================
 // Application Components & Orchestration
@@ -16,6 +17,7 @@ let searchBar = null;
 let resultsGrid = null;
 let favoritesDrawer = null;
 let themeSwitcher = null;
+let bookModal = null;
 
 async function performSearch(query) {
   const queryText = query ? query.trim() : '';
@@ -49,7 +51,27 @@ function init() {
     themeSwitcher = new ThemeSwitcher(themeSwitcherEl);
   }
 
-  // 2. Initialize Search Bar Component
+  // 2. Initialize Book Modal Component
+  bookModal = new BookModal({
+    isFavorite: (id) => isFavorite(id),
+    getFavoriteById: (id) => getFavoriteById(id),
+    onToggleFavorite: (book) => {
+      if (isFavorite(book.id)) {
+        removeFavorite(book.id);
+      } else {
+        addFavorite(book);
+      }
+      favoritesDrawer.updateFavorites(getFavorites());
+      resultsGrid.syncCardStates();
+    },
+    onUpdateMeta: (bookId, meta) => {
+      updateFavoriteMeta(bookId, meta);
+      favoritesDrawer.updateFavorites(getFavorites());
+      resultsGrid.syncCardStates();
+    }
+  });
+
+  // 3. Initialize Search Bar Component
   searchBar = new SearchBar(
     {
       input: document.getElementById('search-input'),
@@ -62,7 +84,7 @@ function init() {
     }
   );
 
-  // 3. Initialize Results Grid Component
+  // 4. Initialize Results Grid Component
   resultsGrid = new ResultsGrid(
     {
       grid: document.getElementById('results-grid'),
@@ -74,6 +96,7 @@ function init() {
     },
     {
       isFavorite: (id) => isFavorite(id),
+      getFavoriteById: (id) => getFavoriteById(id),
       onToggleFavorite: (book) => {
         if (isFavorite(book.id)) {
           removeFavorite(book.id);
@@ -82,11 +105,14 @@ function init() {
         }
         favoritesDrawer.updateFavorites(getFavorites());
         resultsGrid.syncCardStates();
+      },
+      onSelectBook: (book) => {
+        bookModal.open(book);
       }
     }
   );
 
-  // 4. Initialize Favorites Drawer Component
+  // 5. Initialize Favorites Drawer Component
   favoritesDrawer = new FavoritesDrawer(
     {
       section: document.getElementById('favorites-section'),
@@ -104,6 +130,9 @@ function init() {
         removeFavorite(bookId);
         favoritesDrawer.updateFavorites(getFavorites());
         resultsGrid.syncCardStates();
+      },
+      onSelectBook: (book) => {
+        bookModal.open(book);
       }
     }
   );
@@ -117,3 +146,4 @@ document.addEventListener('DOMContentLoaded', init);
 if (document.readyState === 'interactive' || document.readyState === 'complete') {
   init();
 }
+

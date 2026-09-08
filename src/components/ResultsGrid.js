@@ -13,10 +13,12 @@ export class ResultsGrid {
    * @param {Object} callbacks Event callbacks
    * @param {Function} callbacks.onToggleFavorite Triggered when a book's favorite state is toggled
    * @param {Function} callbacks.isFavorite Check if a book ID is a favorite
+   * @param {Function} callbacks.getFavoriteById Get favorite book details
+   * @param {Function} callbacks.onSelectBook Triggered when a book card is clicked
    */
   constructor(
     { grid, statusContainer, statusSpinner, statusText, filterBar, filterInput },
-    { onToggleFavorite, isFavorite }
+    { onToggleFavorite, isFavorite, getFavoriteById, onSelectBook }
   ) {
     this.grid = grid;
     this.statusContainer = statusContainer;
@@ -27,6 +29,8 @@ export class ResultsGrid {
 
     this.onToggleFavorite = onToggleFavorite;
     this.isFavorite = isFavorite;
+    this.getFavoriteById = getFavoriteById;
+    this.onSelectBook = onSelectBook;
 
     this.searchResults = [];
     this.authorFilter = '';
@@ -133,8 +137,12 @@ export class ResultsGrid {
     const fragment = document.createDocumentFragment();
     filteredDocs.forEach(book => {
       const isSaved = this.isFavorite(book.id);
-      const cardInstance = new BookCard(book, isSaved, {
-        onToggleFavorite: this.onToggleFavorite
+      const savedBook = isSaved && this.getFavoriteById ? this.getFavoriteById(book.id) : null;
+      const displayBook = savedBook || book;
+
+      const cardInstance = new BookCard(displayBook, isSaved, {
+        onToggleFavorite: this.onToggleFavorite,
+        onSelectBook: this.onSelectBook
       });
       
       fragment.appendChild(cardInstance.render());
@@ -147,9 +155,7 @@ export class ResultsGrid {
    * Syncs favorite status across all rendered BookCards
    */
   syncCardStates() {
-    this.cardInstances.forEach(card => {
-      const isSaved = this.isFavorite(card.book.id);
-      card.setSavedState(isSaved);
-    });
+    this.render();
   }
 }
+
