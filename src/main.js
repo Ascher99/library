@@ -123,7 +123,11 @@ function init() {
       filterContainer: document.getElementById('favorites-filter-container'),
       filterInput: document.getElementById('favorites-filter-input'),
       emptyMsg: document.getElementById('favorites-empty-msg'),
-      list: document.getElementById('favorites-list')
+      list: document.getElementById('favorites-list'),
+      exportBtn: document.getElementById('export-favs-btn'),
+      importBtn: document.getElementById('import-favs-btn'),
+      importInput: document.getElementById('import-favs-input'),
+      toastContainer: document.getElementById('favorites-toast')
     },
     {
       onRemoveFavorite: (bookId) => {
@@ -133,9 +137,14 @@ function init() {
       },
       onSelectBook: (book) => {
         bookModal.open(book);
+      },
+      onImportSuccess: () => {
+        favoritesDrawer.updateFavorites(getFavorites());
+        resultsGrid.syncCardStates();
       }
     }
   );
+
 
   // Load initial favorites list from LocalStorage
   favoritesDrawer.updateFavorites(getFavorites());

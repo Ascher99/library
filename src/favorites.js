@@ -113,4 +113,76 @@ export function isFavorite(bookId) {
   return favoriteIdsSet.has(bookId);
 }
 
+/**
+ * Exports current favorites list as a downloadable JSON file.
+ */
+export function exportFavoritesJSON() {
+  const jsonString = JSON.stringify(favoritesCache, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'lumina-favorites.json';
+  document.body.appendChild(link);
+  link.click();
+  
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Imports books from a JSON string into favorites cache and localStorage.
+ * Merges new items with existing favorites without creating duplicate IDs.
+ * @param {string} jsonText The raw JSON content from imported file
+ * @returns {Object} { success: boolean, totalCount: number, addedCount: number, error?: string }
+ */
+export function importFavoritesJSON(jsonText) {
+  try {
+    const parsed = JSON.parse(jsonText);
+    if (!Array.isArray(parsed)) {
+      return { success: false, error: 'Imported file must contain a list of books.' };
+    }
+
+    let addedCount = 0;
+    const currentFavsMap = new Map(favoritesCache.map(item => [item.id, item]));
+
+    parsed.forEach(importedBook => {
+      if (!importedBook || typeof importedBook !== 'object' || !importedBook.id || !importedBook.title) {
+        return; // Skip invalid book objects
+      }
+
+      const existing = currentFavsMap.get(importedBook.id);
+      const sanitized = {
+        readingStatus: 'want_to_read',
+        notes: '',
+        authors: Array.isArray(importedBook.authors) ? importedBook.authors : ['Unknown Author'],
+        firstPublishYear: importedBook.firstPublishYear || 'N/A',
+        coverUrl: importedBook.coverUrl || null,
+        ...importedBook,
+        readingStatus: importedBook.readingStatus || (existing ? existing.readingStatus : 'want_to_read'),
+        notes: importedBook.notes !== undefined ? importedBook.notes : (existing ? existing.notes : '')
+      };
+
+      if (!existing) {
+        addedCount++;
+      }
+      currentFavsMap.set(importedBook.id, sanitized);
+    });
+
+    const updatedList = Array.from(currentFavsMap.values());
+    saveFavorites(updatedList);
+
+    return {
+      success: true,
+      totalCount: updatedList.length,
+      addedCount
+    };
+  } catch (err) {
+    console.error('Error importing favorites JSON:', err);
+    return { success: false, error: 'Invalid JSON file structure.' };
+  }
+}
+
+
 

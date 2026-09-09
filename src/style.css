@@ -697,6 +697,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  gap: 8px;
 }
 
 .favorites-title-container {
@@ -716,6 +717,64 @@ a:hover {
   display: block;
   margin-top: -2px;
 }
+
+/* Export / Import Buttons in Header */
+.favorites-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fav-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.fav-action-btn:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.fav-action-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Favorites Toast Notification */
+.favorites-toast {
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn var(--transition-fast) ease;
+  transition: all var(--transition-fast) ease;
+}
+
+.favorites-toast.success {
+  background-color: var(--accent-light);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.favorites-toast.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
 
 /* Sidebar filtering input */
 .favorites-filter-container {

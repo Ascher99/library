@@ -1,5 +1,6 @@
 import { FavoriteItem } from './FavoriteItem.js';
 import { debounce } from '../utils.js';
+import { exportFavoritesJSON, importFavoritesJSON } from '../favorites.js';
 
 export class FavoritesDrawer {
   /**
@@ -13,24 +14,18 @@ export class FavoritesDrawer {
    * @param {HTMLInputElement} elements.filterInput Filter input element
    * @param {HTMLElement} elements.emptyMsg The empty message container
    * @param {HTMLElement} elements.list The favorites list items container
-  /**
-   * @param {Object} elements DOM elements
-   * @param {HTMLElement} elements.section The main side panel container
-   * @param {HTMLElement} elements.badgeSubtitle Header subtitle count label
-   * @param {HTMLElement} elements.fabBadge Mobile FAB badge label
-   * @param {HTMLElement} elements.closeBtn Mobile drawer close button
-   * @param {HTMLElement} elements.toggleFab Mobile floating action button
-   * @param {HTMLElement} elements.filterContainer Container for search filter input
-   * @param {HTMLInputElement} elements.filterInput Filter input element
-   * @param {HTMLElement} elements.emptyMsg The empty message container
-   * @param {HTMLElement} elements.list The favorites list items container
+   * @param {HTMLElement} [elements.exportBtn] Button to trigger JSON export
+   * @param {HTMLElement} [elements.importBtn] Button to trigger JSON import
+   * @param {HTMLInputElement} [elements.importInput] Hidden file input element
+   * @param {HTMLElement} [elements.toastContainer] Toast message banner container
    * @param {Object} callbacks Event callbacks
    * @param {Function} callbacks.onRemoveFavorite Triggered when removing a book
    * @param {Function} callbacks.onSelectBook Triggered when clicking a favorited item
+   * @param {Function} [callbacks.onImportSuccess] Triggered when books are imported successfully
    */
   constructor(
-    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, emptyMsg, list },
-    { onRemoveFavorite, onSelectBook }
+    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
+    { onRemoveFavorite, onSelectBook, onImportSuccess }
   ) {
     this.section = section;
     this.badgeSubtitle = badgeSubtitle;
@@ -41,13 +36,19 @@ export class FavoritesDrawer {
     this.filterInput = filterInput;
     this.emptyMsg = emptyMsg;
     this.list = list;
+    this.exportBtn = exportBtn;
+    this.importBtn = importBtn;
+    this.importInput = importInput;
+    this.toastContainer = toastContainer;
 
     this.onRemoveFavorite = onRemoveFavorite;
     this.onSelectBook = onSelectBook;
+    this.onImportSuccess = onImportSuccess;
     
     this.favorites = [];
     this.authorFilter = '';
     this.drawerOverlay = null;
+    this.toastTimeout = null;
 
     this.init();
   }
@@ -71,6 +72,49 @@ export class FavoritesDrawer {
 
     this.filterInput.addEventListener('input', handleFilterInput);
 
+    // Export Action
+    if (this.exportBtn) {
+      this.exportBtn.addEventListener('click', () => {
+        if (this.favorites.length === 0) {
+          this.showToast('No favorites to export.', 'error');
+          return;
+        }
+        exportFavoritesJSON();
+        this.showToast(`Exported ${this.favorites.length} favorite book(s)!`, 'success');
+      });
+    }
+
+    // Import Action
+    if (this.importBtn && this.importInput) {
+      this.importBtn.addEventListener('click', () => {
+        this.importInput.click();
+      });
+
+      this.importInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const res = importFavoritesJSON(event.target.result);
+          if (res.success) {
+            this.showToast(`Imported ${res.addedCount} new book(s) (${res.totalCount} total)`, 'success');
+            if (typeof this.onImportSuccess === 'function') {
+              this.onImportSuccess();
+            }
+          } else {
+            this.showToast(res.error || 'Failed to import favorites.', 'error');
+          }
+          this.importInput.value = '';
+        };
+        reader.onerror = () => {
+          this.showToast('Error reading file.', 'error');
+          this.importInput.value = '';
+        };
+        reader.readAsText(file);
+      });
+    }
+
     // Handle screen resize, auto close on desktop view
     window.addEventListener('resize', () => {
       if (window.innerWidth > 1024) {
@@ -78,6 +122,24 @@ export class FavoritesDrawer {
       }
     });
   }
+
+  /**
+   * Displays inline feedback toast message in favorites drawer.
+   * @param {string} message Message text
+   * @param {'success'|'error'} type Type of notification
+   */
+  showToast(message, type = 'success') {
+    if (!this.toastContainer) return;
+    this.toastContainer.textContent = message;
+    this.toastContainer.className = `favorites-toast ${type}`;
+    this.toastContainer.hidden = false;
+
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastContainer.hidden = true;
+    }, 4000);
+  }
+
 
   /**
    * Opens or closes the mobile drawer layout.
