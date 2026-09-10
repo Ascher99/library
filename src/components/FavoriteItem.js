@@ -1,4 +1,4 @@
-import { getHeartIconSvg, getBookIconSvg, getNoteIconSvg } from './icons.js';
+import { getHeartIconSvg, getBookIconSvg, getNoteIconSvg, getStarIconSvg } from './icons.js';
 
 export class FavoriteItem {
   /**
@@ -43,6 +43,9 @@ export class FavoriteItem {
     };
     const statusText = statusLabels[this.book.readingStatus] || 'Want to Read';
     const hasNotes = Boolean(this.book.notes && this.book.notes.trim());
+    const ratingHtml = this.book.rating > 0 
+      ? `<span class="fav-item-rating" title="Rated ${this.book.rating}/5 stars">${getStarIconSvg(true)} <span>${this.book.rating}</span></span>` 
+      : '';
 
     item.innerHTML = `
       <div class="fav-item-cover">
@@ -57,6 +60,7 @@ export class FavoriteItem {
         <p class="fav-item-author" title="${authorsString}">${authorsString}</p>
         <div class="fav-item-meta-row">
           <span class="fav-item-status status-${this.book.readingStatus || 'want_to_read'}">${statusText}</span>
+          ${ratingHtml}
           <span class="fav-item-year">${this.book.publishYear}</span>
         </div>
       </div>

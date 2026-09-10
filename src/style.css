@@ -1484,3 +1484,146 @@ a:hover {
   text-align: center;
 }
 
+/* ==========================================================================
+   Star Rating & Personal Reading Tracker System
+   ========================================================================== */
+
+/* Modal Rating Section */
+.modal-rating-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.star-rating-widget {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast) ease, color var(--transition-fast) ease;
+}
+
+.star-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.star-btn:hover,
+.star-btn.hover {
+  color: #eab308;
+  transform: scale(1.15);
+}
+
+.star-btn.active {
+  color: #eab308;
+}
+
+/* Favorite Item Rating Badge */
+.fav-item-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ca8a04;
+  background: rgba(234, 179, 8, 0.12);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.fav-item-rating svg {
+  width: 11px;
+  height: 11px;
+  fill: currentColor;
+}
+
+/* Favorites Status Filter Tabs */
+.fav-status-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 3px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.fav-tab {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast) ease;
+  white-space: nowrap;
+}
+
+.fav-tab:hover {
+  color: var(--text-primary);
+}
+
+.fav-tab.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Favorites Stats Bar */
+.fav-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+.stat-pill {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+
+.stat-pill.highlight {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.3);
+  color: #ca8a04;
+  font-weight: 600;
+}
+
+.fav-filter-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.fav-filter-empty .filter-hint {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+

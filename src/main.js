@@ -122,6 +122,8 @@ function init() {
       toggleFab: document.getElementById('toggle-favs-fab'),
       filterContainer: document.getElementById('favorites-filter-container'),
       filterInput: document.getElementById('favorites-filter-input'),
+      statusTabsContainer: document.getElementById('favorites-status-tabs'),
+      statsBar: document.getElementById('favorites-stats-bar'),
       emptyMsg: document.getElementById('favorites-empty-msg'),
       list: document.getElementById('favorites-list'),
       exportBtn: document.getElementById('export-favs-btn'),

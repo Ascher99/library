@@ -24,7 +24,7 @@ export class FavoritesDrawer {
    * @param {Function} [callbacks.onImportSuccess] Triggered when books are imported successfully
    */
   constructor(
-    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
+    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, statusTabsContainer, statsBar, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
     { onRemoveFavorite, onSelectBook, onImportSuccess }
   ) {
     this.section = section;
@@ -34,6 +34,8 @@ export class FavoritesDrawer {
     this.toggleFab = toggleFab;
     this.filterContainer = filterContainer;
     this.filterInput = filterInput;
+    this.statusTabsContainer = statusTabsContainer;
+    this.statsBar = statsBar;
     this.emptyMsg = emptyMsg;
     this.list = list;
     this.exportBtn = exportBtn;
@@ -47,6 +49,7 @@ export class FavoritesDrawer {
     
     this.favorites = [];
     this.authorFilter = '';
+    this.activeStatusTab = 'all';
     this.drawerOverlay = null;
     this.toastTimeout = null;
 
@@ -63,6 +66,20 @@ export class FavoritesDrawer {
 
     // Close via Close Button
     this.closeBtn.addEventListener('click', () => this.toggle(true));
+
+    // Status filter tabs navigation
+    if (this.statusTabsContainer) {
+      this.statusTabsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.fav-tab');
+        if (!btn) return;
+        const targetTab = btn.getAttribute('data-tab');
+        this.activeStatusTab = targetTab;
+        this.statusTabsContainer.querySelectorAll('.fav-tab').forEach(b => {
+          b.classList.toggle('active', b === btn);
+        });
+        this.render();
+      });
+    }
 
     // Filter input typing (debounced)
     const handleFilterInput = debounce((e) => {
@@ -188,6 +205,23 @@ export class FavoritesDrawer {
     this.list.innerHTML = '';
     const totalCount = this.favorites.length;
 
+    // Compute library statistics
+    const readingCount = this.favorites.filter(f => f.readingStatus === 'reading').length;
+    const completedCount = this.favorites.filter(f => f.readingStatus === 'completed').length;
+    const wantCount = this.favorites.filter(f => (f.readingStatus || 'want_to_read') === 'want_to_read').length;
+    const ratedBooks = this.favorites.filter(f => f.rating > 0);
+    const avgRating = ratedBooks.length > 0
+      ? (ratedBooks.reduce((sum, f) => sum + f.rating, 0) / ratedBooks.length).toFixed(1)
+      : null;
+
+    if (this.statsBar) {
+      this.statsBar.innerHTML = `
+        <span class="stat-pill" title="${readingCount} currently reading">📖 ${readingCount} Reading</span>
+        <span class="stat-pill" title="${completedCount} completed books">✓ ${completedCount} Done</span>
+        ${avgRating ? `<span class="stat-pill highlight" title="Average rating across rated books">★ ${avgRating} avg</span>` : ''}
+      `;
+    }
+
     // Update labels and count indicators
     this.badgeSubtitle.textContent = `${totalCount} book${totalCount === 1 ? '' : 's'} saved`;
     this.fabBadge.textContent = totalCount;
@@ -204,18 +238,26 @@ export class FavoritesDrawer {
     }
 
     let filteredFavs = this.favorites;
+
+    // Status Tab Filtering
+    if (this.activeStatusTab !== 'all') {
+      filteredFavs = filteredFavs.filter(book => (book.readingStatus || 'want_to_read') === this.activeStatusTab);
+    }
+
+    // Author Text Query Filtering
     if (this.authorFilter.trim()) {
       const authorQuery = this.authorFilter.toLowerCase().trim();
-      filteredFavs = this.favorites.filter(book =>
+      filteredFavs = filteredFavs.filter(book =>
         book.authors.some(author => author.toLowerCase().includes(authorQuery))
       );
     }
 
     if (filteredFavs.length === 0) {
       this.list.innerHTML = `
-        <p style="font-size: 0.8rem; text-align: center; color: var(--text-muted); padding: 20px;">
-          No favorites match filter "${this.authorFilter}"
-        </p>
+        <div class="fav-filter-empty">
+          <p>No favorite books found in this view.</p>
+          ${this.authorFilter ? `<span class="filter-hint">Matching author query: "${this.authorFilter}"</span>` : ''}
+        </div>
       `;
       return;
     }

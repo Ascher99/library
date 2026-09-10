@@ -5,7 +5,8 @@ import {
   getCheckCircleIconSvg,
   getBookmarkIconSvg,
   getOpenBookIconSvg,
-  getNoteIconSvg
+  getNoteIconSvg,
+  getStarIconSvg
 } from './icons.js';
 
 export class BookModal {
@@ -41,7 +42,8 @@ export class BookModal {
     this.activeBook = {
       ...book,
       readingStatus: savedBook?.readingStatus || 'want_to_read',
-      notes: savedBook?.notes || ''
+      notes: savedBook?.notes || '',
+      rating: savedBook?.rating || 0
     };
 
     this.render();
@@ -152,6 +154,20 @@ export class BookModal {
               </div>
             </div>
 
+            <div class="modal-section modal-rating-section" style="${isSaved ? '' : 'display:none;'}">
+              <div class="modal-section-header">
+                <h4 class="modal-section-title">Personal Rating</h4>
+                <span class="modal-rating-value">${book.rating ? `${book.rating} / 5 Stars` : 'Unrated'}</span>
+              </div>
+              <div class="star-rating-widget">
+                ${[1, 2, 3, 4, 5].map(star => `
+                  <button class="star-btn ${star <= (book.rating || 0) ? 'active' : ''}" data-star="${star}" aria-label="Rate ${star} out of 5 stars" title="${star} Star${star > 1 ? 's' : ''}">
+                    ${getStarIconSvg(star <= (book.rating || 0))}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
             <div class="modal-section modal-notes-section" style="${isSaved ? '' : 'display:none;'}">
               <div class="modal-section-header">
                 <h4 class="modal-section-title">
@@ -231,6 +247,42 @@ export class BookModal {
         pill.classList.add('active');
         if (this.onUpdateMeta) {
           this.onUpdateMeta(this.activeBook.id, { readingStatus: newStatus });
+        }
+      });
+    });
+
+    // Star rating buttons
+    const starBtns = this.container.querySelectorAll('.star-btn');
+    const ratingValText = this.container.querySelector('.modal-rating-value');
+    starBtns.forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        const hoverVal = parseInt(btn.getAttribute('data-star'), 10);
+        starBtns.forEach(b => {
+          const val = parseInt(b.getAttribute('data-star'), 10);
+          b.classList.toggle('hover', val <= hoverVal);
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        starBtns.forEach(b => b.classList.remove('hover'));
+      });
+      btn.addEventListener('click', () => {
+        const starVal = parseInt(btn.getAttribute('data-star'), 10);
+        const newRating = (this.activeBook.rating === starVal) ? 0 : starVal;
+        this.activeBook.rating = newRating;
+        
+        starBtns.forEach(b => {
+          const val = parseInt(b.getAttribute('data-star'), 10);
+          const isFilled = val <= newRating;
+          b.classList.toggle('active', isFilled);
+          b.innerHTML = getStarIconSvg(isFilled);
+        });
+
+        if (ratingValText) {
+          ratingValText.textContent = newRating ? `${newRating} / 5 Stars` : 'Unrated';
+        }
+
+        if (this.onUpdateMeta) {
+          this.onUpdateMeta(this.activeBook.id, { rating: newRating });
         }
       });
     });

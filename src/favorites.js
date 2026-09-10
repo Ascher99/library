@@ -16,6 +16,7 @@ function initFavoritesCache() {
     return parsed.map(b => ({
       readingStatus: 'want_to_read',
       notes: '',
+      rating: 0,
       ...b
     }));
   } catch (e) {
@@ -65,6 +66,7 @@ export function addFavorite(book) {
     const bookToAdd = {
       readingStatus: 'want_to_read',
       notes: '',
+      rating: 0,
       ...book
     };
     const updated = [...favoritesCache, bookToAdd];
@@ -156,12 +158,14 @@ export function importFavoritesJSON(jsonText) {
       const sanitized = {
         readingStatus: 'want_to_read',
         notes: '',
+        rating: 0,
         authors: Array.isArray(importedBook.authors) ? importedBook.authors : ['Unknown Author'],
         firstPublishYear: importedBook.firstPublishYear || 'N/A',
         coverUrl: importedBook.coverUrl || null,
         ...importedBook,
         readingStatus: importedBook.readingStatus || (existing ? existing.readingStatus : 'want_to_read'),
-        notes: importedBook.notes !== undefined ? importedBook.notes : (existing ? existing.notes : '')
+        notes: importedBook.notes !== undefined ? importedBook.notes : (existing ? existing.notes : ''),
+        rating: typeof importedBook.rating === 'number' ? importedBook.rating : (existing ? existing.rating || 0 : 0)
       };
 
       if (!existing) {
