@@ -1,4 +1,4 @@
-# The Library - Book Catalogue
+# The Library - Book Catalogue https://ascher99.github.io/library/
 
 A responsive, high-performance web application designed to search the global library catalog and curate a list of your favorite books. Built using Vanilla HTML, CSS (via modern variables & CSS custom drawings), and Vanilla JS (ES6+), compiled and optimized with Vite.
 
