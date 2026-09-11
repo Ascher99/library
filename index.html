@@ -69,6 +69,19 @@
         <span>Search</span>
       </button>
     </div>
+
+    <!-- Quick Genre / Subject Pills -->
+    <div class="genre-chips-container" id="genre-chips">
+      <span class="genre-chips-label">Popular Topics:</span>
+      <button class="genre-chip" data-query="fiction">📚 Fiction</button>
+      <button class="genre-chip" data-query="science fiction">🚀 Sci-Fi</button>
+      <button class="genre-chip" data-query="mystery">🕵️ Mystery</button>
+      <button class="genre-chip" data-query="history">🏛️ History</button>
+      <button class="genre-chip" data-query="psychology">🧠 Psychology</button>
+      <button class="genre-chip" data-query="art">🎨 Art</button>
+      <button class="genre-chip" data-query="fantasy">📜 Fantasy</button>
+      <button class="genre-chip" data-query="business">💼 Business</button>
+    </div>
   </section>
 
   <!-- Main Layout Wrapper -->
@@ -76,7 +89,7 @@
     
     <!-- Left Section: Search and Results -->
     <section class="results-section">
-      <!-- Filter and Sub-controls (Author Filter) -->
+      <!-- Filter and Sub-controls (Author Filter & Sort Options) -->
       <div class="search-filters" id="search-filters-bar" hidden>
         <div class="filter-wrapper">
           <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -91,6 +104,16 @@
             <line x1="17" y1="16" x2="23" y2="16"></line>
           </svg>
           <input type="text" id="filter-input" placeholder="Filter current results by author name..." autocomplete="off">
+        </div>
+
+        <div class="sort-wrapper">
+          <label for="sort-select" class="sort-label">Sort:</label>
+          <select id="sort-select" class="sort-select">
+            <option value="default">Relevance</option>
+            <option value="year-desc">Newest First</option>
+            <option value="year-asc">Oldest First</option>
+            <option value="title-asc">Title (A-Z)</option>
+          </select>
         </div>
       </div>
 
@@ -164,6 +187,9 @@
 
         <!-- Library Reading Stats Summary -->
         <div class="fav-stats-bar" id="favorites-stats-bar"></div>
+
+        <!-- Personal Reading Goal Widget -->
+        <div class="reading-goal-widget" id="reading-goal-widget"></div>
       </div>
 
       <!-- Favorites List Container -->

@@ -188,5 +188,36 @@ export function importFavoritesJSON(jsonText) {
   }
 }
 
+const GOAL_STORAGE_KEY = 'lumina_reading_goal';
+
+/**
+ * Gets the target reading goal count from localStorage (default: 5)
+ * @returns {number}
+ */
+export function getReadingGoal() {
+  try {
+    const val = localStorage.getItem(GOAL_STORAGE_KEY);
+    return val ? Math.max(1, parseInt(val, 10) || 5) : 5;
+  } catch (e) {
+    return 5;
+  }
+}
+
+/**
+ * Saves a new reading goal target count to localStorage
+ * @param {number} goal Target count
+ * @returns {number} Sanitized target count
+ */
+export function setReadingGoal(goal) {
+  const sanitized = Math.max(1, Math.min(999, parseInt(goal, 10) || 5));
+  try {
+    localStorage.setItem(GOAL_STORAGE_KEY, sanitized.toString());
+  } catch (e) {
+    console.error('Error writing reading goal to localStorage:', e);
+  }
+  return sanitized;
+}
+
+
 
 

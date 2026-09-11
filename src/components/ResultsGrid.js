@@ -10,6 +10,7 @@ export class ResultsGrid {
    * @param {HTMLElement} elements.statusText Text status label
    * @param {HTMLElement} elements.filterBar Bar container for filters
    * @param {HTMLInputElement} elements.filterInput Filter input element
+   * @param {HTMLSelectElement} [elements.sortSelect] Sort dropdown element
    * @param {Object} callbacks Event callbacks
    * @param {Function} callbacks.onToggleFavorite Triggered when a book's favorite state is toggled
    * @param {Function} callbacks.isFavorite Check if a book ID is a favorite
@@ -17,7 +18,7 @@ export class ResultsGrid {
    * @param {Function} callbacks.onSelectBook Triggered when a book card is clicked
    */
   constructor(
-    { grid, statusContainer, statusSpinner, statusText, filterBar, filterInput },
+    { grid, statusContainer, statusSpinner, statusText, filterBar, filterInput, sortSelect },
     { onToggleFavorite, isFavorite, getFavoriteById, onSelectBook }
   ) {
     this.grid = grid;
@@ -26,6 +27,7 @@ export class ResultsGrid {
     this.statusText = statusText;
     this.filterBar = filterBar;
     this.filterInput = filterInput;
+    this.sortSelect = sortSelect;
 
     this.onToggleFavorite = onToggleFavorite;
     this.isFavorite = isFavorite;
@@ -34,6 +36,7 @@ export class ResultsGrid {
 
     this.searchResults = [];
     this.authorFilter = '';
+    this.sortOption = 'default';
     this.cardInstances = []; // Cache BookCard instances for quick state updates
 
     this.init();
@@ -46,6 +49,13 @@ export class ResultsGrid {
     }, 150);
 
     this.filterInput.addEventListener('input', handleFilterInput);
+
+    if (this.sortSelect) {
+      this.sortSelect.addEventListener('change', (e) => {
+        this.sortOption = e.target.value;
+        this.render();
+      });
+    }
   }
 
   /**
@@ -109,18 +119,35 @@ export class ResultsGrid {
   }
 
   /**
-   * Renders the current list of books filtered by author.
+   * Renders the current list of books filtered by author and sorted by criteria.
    */
   render() {
     this.grid.innerHTML = '';
     this.cardInstances = [];
 
-    let filteredDocs = this.searchResults;
+    let filteredDocs = [...this.searchResults];
     if (this.authorFilter.trim()) {
       const authorQuery = this.authorFilter.toLowerCase().trim();
-      filteredDocs = this.searchResults.filter(book =>
+      filteredDocs = filteredDocs.filter(book =>
         book.authors.some(author => author.toLowerCase().includes(authorQuery))
       );
+    }
+
+    // Sort documents based on selected sort option
+    if (this.sortOption === 'year-desc') {
+      filteredDocs.sort((a, b) => {
+        const yearA = parseInt(a.publishYear) || 0;
+        const yearB = parseInt(b.publishYear) || 0;
+        return yearB - yearA;
+      });
+    } else if (this.sortOption === 'year-asc') {
+      filteredDocs.sort((a, b) => {
+        const yearA = parseInt(a.publishYear) || 0;
+        const yearB = parseInt(b.publishYear) || 0;
+        return yearA - yearB;
+      });
+    } else if (this.sortOption === 'title-asc') {
+      filteredDocs.sort((a, b) => a.title.localeCompare(b.title));
     }
 
     if (filteredDocs.length === 0 && this.searchResults.length > 0) {

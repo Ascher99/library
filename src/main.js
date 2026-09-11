@@ -92,7 +92,8 @@ function init() {
       statusSpinner: document.getElementById('status-spinner'),
       statusText: document.getElementById('status-text'),
       filterBar: document.getElementById('search-filters-bar'),
-      filterInput: document.getElementById('filter-input')
+      filterInput: document.getElementById('filter-input'),
+      sortSelect: document.getElementById('sort-select')
     },
     {
       isFavorite: (id) => isFavorite(id),
@@ -124,6 +125,7 @@ function init() {
       filterInput: document.getElementById('favorites-filter-input'),
       statusTabsContainer: document.getElementById('favorites-status-tabs'),
       statsBar: document.getElementById('favorites-stats-bar'),
+      readingGoalWidget: document.getElementById('reading-goal-widget'),
       emptyMsg: document.getElementById('favorites-empty-msg'),
       list: document.getElementById('favorites-list'),
       exportBtn: document.getElementById('export-favs-btn'),
@@ -147,6 +149,21 @@ function init() {
     }
   );
 
+  // 6. Initialize Genre Quick Topic Chips
+  const genreChipsContainer = document.getElementById('genre-chips');
+  if (genreChipsContainer) {
+    genreChipsContainer.addEventListener('click', (e) => {
+      const chip = e.target.closest('.genre-chip');
+      if (!chip) return;
+      const query = chip.getAttribute('data-query');
+      if (query) {
+        genreChipsContainer.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        searchBar.setQuery(query);
+        performSearch(query);
+      }
+    });
+  }
 
   // Load initial favorites list from LocalStorage
   favoritesDrawer.updateFavorites(getFavorites());

@@ -1,6 +1,6 @@
 import { FavoriteItem } from './FavoriteItem.js';
 import { debounce } from '../utils.js';
-import { exportFavoritesJSON, importFavoritesJSON } from '../favorites.js';
+import { exportFavoritesJSON, importFavoritesJSON, getReadingGoal, setReadingGoal } from '../favorites.js';
 
 export class FavoritesDrawer {
   /**
@@ -12,6 +12,7 @@ export class FavoritesDrawer {
    * @param {HTMLElement} elements.toggleFab Mobile floating action button
    * @param {HTMLElement} elements.filterContainer Container for search filter input
    * @param {HTMLInputElement} elements.filterInput Filter input element
+   * @param {HTMLElement} [elements.readingGoalWidget] Container for personal reading goal progress
    * @param {HTMLElement} elements.emptyMsg The empty message container
    * @param {HTMLElement} elements.list The favorites list items container
    * @param {HTMLElement} [elements.exportBtn] Button to trigger JSON export
@@ -24,7 +25,7 @@ export class FavoritesDrawer {
    * @param {Function} [callbacks.onImportSuccess] Triggered when books are imported successfully
    */
   constructor(
-    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, statusTabsContainer, statsBar, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
+    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, statusTabsContainer, statsBar, readingGoalWidget, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
     { onRemoveFavorite, onSelectBook, onImportSuccess }
   ) {
     this.section = section;
@@ -36,6 +37,7 @@ export class FavoritesDrawer {
     this.filterInput = filterInput;
     this.statusTabsContainer = statusTabsContainer;
     this.statsBar = statsBar;
+    this.readingGoalWidget = readingGoalWidget;
     this.emptyMsg = emptyMsg;
     this.list = list;
     this.exportBtn = exportBtn;
@@ -220,6 +222,44 @@ export class FavoritesDrawer {
         <span class="stat-pill" title="${completedCount} completed books">✓ ${completedCount} Done</span>
         ${avgRating ? `<span class="stat-pill highlight" title="Average rating across rated books">★ ${avgRating} avg</span>` : ''}
       `;
+    }
+
+    // Render Reading Goal Widget
+    if (this.readingGoalWidget) {
+      const targetGoal = getReadingGoal();
+      const pct = Math.min(100, Math.round((completedCount / targetGoal) * 100));
+
+      this.readingGoalWidget.innerHTML = `
+        <div class="goal-header">
+          <span class="goal-title">🎯 Reading Goal</span>
+          <div class="goal-controls">
+            <button class="goal-btn goal-minus" title="Decrease target goal" ${targetGoal <= 1 ? 'disabled' : ''}>-</button>
+            <span class="goal-numbers"><strong>${completedCount}</strong> / ${targetGoal} books</span>
+            <button class="goal-btn goal-plus" title="Increase target goal">+</button>
+          </div>
+        </div>
+        <div class="goal-bar-track" title="${pct}% of annual target completed">
+          <div class="goal-bar-fill" style="width: ${pct}%;"></div>
+        </div>
+        ${completedCount >= targetGoal ? '<div class="goal-badge">🎉 Goal Achieved!</div>' : ''}
+      `;
+
+      const minusBtn = this.readingGoalWidget.querySelector('.goal-minus');
+      const plusBtn = this.readingGoalWidget.querySelector('.goal-plus');
+
+      if (minusBtn) {
+        minusBtn.addEventListener('click', () => {
+          setReadingGoal(targetGoal - 1);
+          this.render();
+        });
+      }
+
+      if (plusBtn) {
+        plusBtn.addEventListener('click', () => {
+          setReadingGoal(targetGoal + 1);
+          this.render();
+        });
+      }
     }
 
     // Update labels and count indicators
