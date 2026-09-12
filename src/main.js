@@ -44,7 +44,12 @@ async function performSearch(query) {
 // ==========================================================================
 // Initialization
 // ==========================================================================
+let isInitialized = false;
+
 function init() {
+  if (isInitialized) return;
+  isInitialized = true;
+
   // 1. Initialize Theme Switcher Component
   const themeSwitcherEl = document.querySelector('.theme-switcher');
   if (themeSwitcherEl) {
@@ -170,8 +175,9 @@ function init() {
 }
 
 // Execute app startup
-document.addEventListener('DOMContentLoaded', init);
-if (document.readyState === 'interactive' || document.readyState === 'complete') {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
   init();
 }
 

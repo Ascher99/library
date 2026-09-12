@@ -16,3 +16,19 @@ export function debounce(fn, delay) {
     }, delay);
   };
 }
+
+/**
+ * Escapes special HTML characters to prevent XSS and HTML attribute breaking.
+ * @param {string|number} str String to escape
+ * @returns {string}
+ */
+export function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+

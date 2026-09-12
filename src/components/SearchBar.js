@@ -81,6 +81,7 @@ export class SearchBar {
   }
 
   setQuery(query) {
+    this.cancelPendingSearch();
     this.input.value = query;
     this.toggleClearButton(query);
   }

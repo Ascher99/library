@@ -160,9 +160,9 @@ export function importFavoritesJSON(jsonText) {
         notes: '',
         rating: 0,
         authors: Array.isArray(importedBook.authors) ? importedBook.authors : ['Unknown Author'],
-        firstPublishYear: importedBook.firstPublishYear || 'N/A',
-        coverUrl: importedBook.coverUrl || null,
+        coverId: importedBook.coverId || null,
         ...importedBook,
+        publishYear: importedBook.publishYear || importedBook.firstPublishYear || 'Unknown Year',
         readingStatus: importedBook.readingStatus || (existing ? existing.readingStatus : 'want_to_read'),
         notes: importedBook.notes !== undefined ? importedBook.notes : (existing ? existing.notes : ''),
         rating: typeof importedBook.rating === 'number' ? importedBook.rating : (existing ? existing.rating || 0 : 0)

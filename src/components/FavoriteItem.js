@@ -1,4 +1,5 @@
 import { getHeartIconSvg, getBookIconSvg, getNoteIconSvg, getStarIconSvg } from './icons.js';
+import { escapeHtml } from '../utils.js';
 
 export class FavoriteItem {
   /**
@@ -25,7 +26,7 @@ export class FavoriteItem {
     let coverHtml = '';
     if (this.book.coverId) {
       const coverUrl = `https://covers.openlibrary.org/b/id/${this.book.coverId}-S.jpg`;
-      coverHtml = `<img src="${coverUrl}" alt="${this.book.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+      coverHtml = `<img src="${coverUrl}" alt="${escapeHtml(this.book.title)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
     }
 
     const placeholderHtml = `
@@ -53,18 +54,18 @@ export class FavoriteItem {
         ${placeholderHtml}
       </div>
       <div class="fav-item-details">
-        <h4 class="fav-item-title" title="${this.book.title}">
-          ${this.book.title}
+        <h4 class="fav-item-title" title="${escapeHtml(this.book.title)}">
+          ${escapeHtml(this.book.title)}
           ${hasNotes ? `<span class="note-indicator-icon" title="Contains personal note">${getNoteIconSvg()}</span>` : ''}
         </h4>
-        <p class="fav-item-author" title="${authorsString}">${authorsString}</p>
+        <p class="fav-item-author" title="${escapeHtml(authorsString)}">${escapeHtml(authorsString)}</p>
         <div class="fav-item-meta-row">
           <span class="fav-item-status status-${this.book.readingStatus || 'want_to_read'}">${statusText}</span>
           ${ratingHtml}
-          <span class="fav-item-year">${this.book.publishYear}</span>
+          <span class="fav-item-year">${escapeHtml(this.book.publishYear)}</span>
         </div>
       </div>
-      <button class="remove-fav-btn" aria-label="Remove ${this.book.title} from favorites" title="Remove from favorites">
+      <button class="remove-fav-btn" aria-label="Remove ${escapeHtml(this.book.title)} from favorites" title="Remove from favorites">
         ${getHeartIconSvg()}
       </button>
     `;

@@ -8,6 +8,7 @@ import {
   getNoteIconSvg,
   getStarIconSvg
 } from './icons.js';
+import { escapeHtml } from '../utils.js';
 
 export class BookModal {
   /**
@@ -36,7 +37,6 @@ export class BookModal {
     this.close(); // Close any currently open modal first
 
     const savedBook = this.getFavoriteById(book.id);
-    const isSaved = this.isFavorite(book.id);
     
     // Use saved meta or fallback defaults
     this.activeBook = {
@@ -56,13 +56,14 @@ export class BookModal {
    */
   close() {
     if (this.container) {
-      this.container.classList.remove('active');
+      const modalToRemove = this.container;
+      modalToRemove.classList.remove('active');
       setTimeout(() => {
-        if (this.container && this.container.parentNode) {
-          this.container.parentNode.removeChild(this.container);
+        if (modalToRemove && modalToRemove.parentNode) {
+          modalToRemove.parentNode.removeChild(modalToRemove);
         }
-        this.container = null;
       }, 200);
+      this.container = null;
     }
     if (this.keydownHandler) {
       document.removeEventListener('keydown', this.keydownHandler);
@@ -72,6 +73,16 @@ export class BookModal {
   }
 
   render() {
+    // Clean up existing container element if re-rendering while open
+    if (this.container && this.container.parentNode) {
+      this.container.parentNode.removeChild(this.container);
+      this.container = null;
+    }
+    if (this.keydownHandler) {
+      document.removeEventListener('keydown', this.keydownHandler);
+      this.keydownHandler = null;
+    }
+
     const book = this.activeBook;
     const isSaved = this.isFavorite(book.id);
     const authorsString = book.authors.length > 0 ? book.authors.join(', ') : 'Unknown Author';
@@ -79,7 +90,7 @@ export class BookModal {
     let coverHtml = '';
     if (book.coverId) {
       const coverUrl = `https://covers.openlibrary.org/b/id/${book.coverId}-L.jpg`;
-      coverHtml = `<img class="modal-cover-img" src="${coverUrl}" alt="Cover of ${book.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+      coverHtml = `<img class="modal-cover-img" src="${coverUrl}" alt="Cover of ${escapeHtml(book.title)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
     }
 
     const placeholderHtml = `
@@ -89,11 +100,11 @@ export class BookModal {
           <path d="M12 7V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M3 18C2.73478 18 2.48043 17.8946 2.29289 17.7071C2.10536 17.5196 2 17.2652 2 17V4C2 3.73478 2.10536 3.48043 2.29289 3.29289C2.48043 3.10536 2.73478 3 3 3H8C9.06087 3 10.0783 3.42143 10.8284 4.17157C11.5786 4.92172 12 5.93913 12 7C12 5.93913 12.4214 4.92172 13.1716 4.17157C13.9217 3.42143 14.9391 3 16 3H21C21.2652 3 21.5196 3.10536 21.7071 3.29289C21.8946 3.48043 22 3.73478 22 4V17C22 17.2652 21.8946 17.5196 21.7071 17.7071C21.5196 17.8946 21.2652 18 21 18H15C14.2044 18 13.4413 18.3161 12.8787 18.8787C12.3161 19.4413 12 20.2044 12 21C12 20.2044 11.6839 19.4413 11.1213 18.8787C10.5587 18.3161 9.79565 18 9 18H3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="no-cover-title">${book.title}</span>
+        <span class="no-cover-title">${escapeHtml(book.title)}</span>
       </div>
     `;
 
-    const openLibraryUrl = `https://openlibrary.org${book.id}`;
+    const openLibraryUrl = book.id.startsWith('/') ? `https://openlibrary.org${book.id}` : `https://openlibrary.org/${book.id}`;
 
     const container = document.createElement('div');
     container.className = 'modal-backdrop';
@@ -228,9 +239,14 @@ export class BookModal {
       favBtn.addEventListener('click', () => {
         if (this.onToggleFavorite) {
           this.onToggleFavorite(this.activeBook);
-          const isSavedNow = this.isFavorite(this.activeBook.id);
-          // Re-render modal to toggle status & notes fields
-          this.activeBook.readingStatus = 'want_to_read';
+          const savedBook = this.getFavoriteById(this.activeBook.id);
+          if (savedBook) {
+            this.activeBook = { ...this.activeBook, ...savedBook };
+          } else {
+            this.activeBook.readingStatus = 'want_to_read';
+            this.activeBook.notes = '';
+            this.activeBook.rating = 0;
+          }
           this.render();
           this.bindEvents();
         }
