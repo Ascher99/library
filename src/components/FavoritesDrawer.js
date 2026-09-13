@@ -1,6 +1,6 @@
 import { FavoriteItem } from './FavoriteItem.js';
 import { debounce } from '../utils.js';
-import { exportFavoritesJSON, importFavoritesJSON, getReadingGoal, setReadingGoal } from '../favorites.js';
+import { exportFavoritesJSON, importFavoritesJSON, getReadingGoal, setReadingGoal, getReadingStats } from '../favorites.js';
 
 export class FavoritesDrawer {
   /**
@@ -216,36 +216,77 @@ export class FavoritesDrawer {
       ? (ratedBooks.reduce((sum, f) => sum + f.rating, 0) / ratedBooks.length).toFixed(1)
       : null;
 
+    const stats = getReadingStats();
+
     if (this.statsBar) {
       this.statsBar.innerHTML = `
-        <span class="stat-pill" title="${readingCount} currently reading">📖 ${readingCount} Reading</span>
-        <span class="stat-pill" title="${completedCount} completed books">✓ ${completedCount} Done</span>
-        ${avgRating ? `<span class="stat-pill highlight" title="Average rating across rated books">★ ${avgRating} avg</span>` : ''}
+        <span class="stat-pill" title="${stats.reading} currently reading">📖 ${stats.reading} Reading</span>
+        <span class="stat-pill" title="${stats.completed} completed books">✓ ${stats.completed} Done</span>
+        ${stats.wantToRead ? `<span class="stat-pill" title="${stats.wantToRead} planned to read">📌 ${stats.wantToRead} To Read</span>` : ''}
+        ${stats.avgRating ? `<span class="stat-pill highlight" title="Average rating across rated books">★ ${stats.avgRating} avg</span>` : ''}
       `;
     }
 
-    // Render Reading Goal Widget
+    // Render Reading Goal & Statistics Widget
     if (this.readingGoalWidget) {
-      const targetGoal = getReadingGoal();
-      const pct = Math.min(100, Math.round((completedCount / targetGoal) * 100));
+      const { completed, targetGoal, progressPct, milestones } = stats;
+      const radius = 18;
+      const circumference = 2 * Math.PI * radius;
+      const strokeDashoffset = circumference - (progressPct / 100) * circumference;
+
+      const milestonesHTML = milestones.length > 0 ? `
+        <div class="milestones-row">
+          ${milestones.map(m => `
+            <span class="milestone-badge" title="${m.label}: ${m.desc}">
+              <span class="milestone-icon">${m.icon}</span>
+              <span class="milestone-text">${m.label}</span>
+            </span>
+          `).join('')}
+        </div>
+      ` : '';
 
       this.readingGoalWidget.innerHTML = `
-        <div class="goal-header">
-          <span class="goal-title">🎯 Reading Goal</span>
+        <div class="goal-card-header">
+          <div class="goal-title-group">
+            <span class="goal-title">🎯 Reading Tracker</span>
+            <button class="goal-edit-btn" title="Set custom target reading goal">✏️ Edit Goal</button>
+          </div>
           <div class="goal-controls">
             <button class="goal-btn goal-minus" title="Decrease target goal" ${targetGoal <= 1 ? 'disabled' : ''}>-</button>
-            <span class="goal-numbers"><strong>${completedCount}</strong> / ${targetGoal} books</span>
+            <span class="goal-numbers"><strong>${completed}</strong> / ${targetGoal} books</span>
             <button class="goal-btn goal-plus" title="Increase target goal">+</button>
           </div>
         </div>
-        <div class="goal-bar-track" title="${pct}% of annual target completed">
-          <div class="goal-bar-fill" style="width: ${pct}%;"></div>
+
+        <div class="goal-progress-section">
+          <div class="goal-ring-container">
+            <svg class="goal-ring-svg" width="48" height="48" viewBox="0 0 48 48">
+              <circle class="goal-ring-bg" cx="24" cy="24" r="${radius}" stroke-width="4" />
+              <circle class="goal-ring-fill" cx="24" cy="24" r="${radius}" stroke-width="4"
+                      style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${strokeDashoffset};" />
+            </svg>
+            <span class="goal-ring-text">${progressPct}%</span>
+          </div>
+
+          <div class="goal-progress-details">
+            <div class="goal-bar-track" title="${progressPct}% of goal completed">
+              <div class="goal-bar-fill" style="width: ${progressPct}%;"></div>
+            </div>
+            <p class="goal-insight-text">
+              ${completed >= targetGoal
+                ? '🎉 <strong>Goal Achieved!</strong> Outstanding reading milestone!'
+                : `Target: ${targetGoal} books. <strong>${Math.max(0, targetGoal - completed)}</strong> more to reach your goal!`
+              }
+            </p>
+          </div>
         </div>
-        ${completedCount >= targetGoal ? '<div class="goal-badge">🎉 Goal Achieved!</div>' : ''}
+
+        ${milestonesHTML}
       `;
 
       const minusBtn = this.readingGoalWidget.querySelector('.goal-minus');
       const plusBtn = this.readingGoalWidget.querySelector('.goal-plus');
+      const editBtn = this.readingGoalWidget.querySelector('.goal-edit-btn');
 
       if (minusBtn) {
         minusBtn.addEventListener('click', () => {
@@ -258,6 +299,19 @@ export class FavoritesDrawer {
         plusBtn.addEventListener('click', () => {
           setReadingGoal(targetGoal + 1);
           this.render();
+        });
+      }
+
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          const input = prompt('Enter your target reading goal count (e.g. 12, 25, 50):', targetGoal);
+          if (input !== null) {
+            const num = parseInt(input, 10);
+            if (!isNaN(num) && num > 0) {
+              setReadingGoal(num);
+              this.render();
+            }
+          }
         });
       }
     }

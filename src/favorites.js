@@ -218,6 +218,54 @@ export function setReadingGoal(goal) {
   return sanitized;
 }
 
+/**
+ * Computes detailed reading statistics and milestone achievements from favorites cache.
+ * @returns {Object} Statistics object
+ */
+export function getReadingStats() {
+  const total = favoritesCache.length;
+  const completed = favoritesCache.filter(f => f.readingStatus === 'completed').length;
+  const reading = favoritesCache.filter(f => f.readingStatus === 'reading').length;
+  const wantToRead = favoritesCache.filter(f => (f.readingStatus || 'want_to_read') === 'want_to_read').length;
+  
+  const ratedBooks = favoritesCache.filter(f => typeof f.rating === 'number' && f.rating > 0);
+  const avgRating = ratedBooks.length > 0
+    ? (ratedBooks.reduce((sum, f) => sum + f.rating, 0) / ratedBooks.length).toFixed(1)
+    : null;
+
+  const targetGoal = getReadingGoal();
+  const progressPct = Math.min(100, Math.round((completed / targetGoal) * 100));
+
+  const milestones = [];
+  if (total >= 1) {
+    milestones.push({ id: 'first_book', label: 'First Bookmark', icon: '🔖', desc: 'Saved your first book to favorites' });
+  }
+  if (completed >= 1) {
+    milestones.push({ id: 'first_completed', label: 'Bookworm Start', icon: '📖', desc: 'Finished reading your first book' });
+  }
+  if (completed >= Math.ceil(targetGoal / 2) && targetGoal > 1 && completed > 0) {
+    milestones.push({ id: 'halfway', label: 'Halfway Mark', icon: '⚡', desc: 'Reached 50% of your reading goal' });
+  }
+  if (completed >= targetGoal && targetGoal > 0) {
+    milestones.push({ id: 'goal_achieved', label: 'Goal Achieved', icon: '🏆', desc: 'Successfully hit your annual reading goal!' });
+  }
+  if (completed >= 10) {
+    milestones.push({ id: 'avid_reader', label: 'Avid Scholar', icon: '🎓', desc: 'Completed 10+ books in your library' });
+  }
+
+  return {
+    total,
+    completed,
+    reading,
+    wantToRead,
+    targetGoal,
+    progressPct,
+    avgRating,
+    milestones
+  };
+}
+
+
 
 
 
