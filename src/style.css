@@ -374,6 +374,59 @@ a:hover {
   transform: scale(0.98);
 }
 
+/* Surprise Me Discovery Button */
+.surprise-btn {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-input) 100%);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.surprise-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.surprise-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.surprise-btn .dice-icon {
+  transition: transform 0.4s ease;
+}
+
+.surprise-btn:hover .dice-icon {
+  transform: rotate(180deg);
+}
+
+.surprise-btn.loading {
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.surprise-btn.loading .dice-icon {
+  animation: diceSpin 0.8s linear infinite;
+}
+
+@keyframes diceSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+
 /* ==========================================================================
    Main Application Layout
    ========================================================================== */

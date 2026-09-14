@@ -1,7 +1,7 @@
 // Import styling so Vite bundles and injects it
 import './style.css';
 
-import { searchBooks } from './api.js';
+import { searchBooks, fetchRandomBook } from './api.js';
 import { getFavorites, addFavorite, removeFavorite, isFavorite, getFavoriteById, updateFavoriteMeta } from './favorites.js';
 
 import { ThemeSwitcher } from './components/ThemeSwitcher.js';
@@ -40,6 +40,30 @@ async function performSearch(query) {
     resultsGrid.showStatus(error.message, queryText);
   }
 }
+
+async function performSurprise() {
+  const surpriseBtn = document.getElementById('surprise-btn');
+  if (surpriseBtn) {
+    surpriseBtn.classList.add('loading');
+  }
+
+  resultsGrid.showStatus('LOADING', 'Discovering a surprise book...');
+
+  try {
+    const { surpriseBook, books, subject } = await fetchRandomBook();
+    
+    searchBar.setQuery(subject);
+    resultsGrid.updateResults(books);
+    bookModal.open(surpriseBook);
+  } catch (error) {
+    resultsGrid.showStatus(error.message, 'Surprise Book');
+  } finally {
+    if (surpriseBtn) {
+      surpriseBtn.classList.remove('loading');
+    }
+  }
+}
+
 
 // ==========================================================================
 // Initialization
@@ -167,6 +191,14 @@ function init() {
         searchBar.setQuery(query);
         performSearch(query);
       }
+    });
+  }
+
+  // 7. Initialize Surprise Me Button
+  const surpriseBtn = document.getElementById('surprise-btn');
+  if (surpriseBtn) {
+    surpriseBtn.addEventListener('click', () => {
+      performSurprise();
     });
   }
 

@@ -57,3 +57,40 @@ export async function searchBooks(query) {
     throw new Error('NETWORK_ERROR');
   }
 }
+
+const POPULAR_SUBJECTS = [
+  'fiction',
+  'classic',
+  'fantasy',
+  'mystery',
+  'science fiction',
+  'history',
+  'philosophy',
+  'adventure',
+  'thriller',
+  'poetry'
+];
+
+/**
+ * Fetches search results for a randomly selected popular topic and returns a random book recommendation.
+ * @returns {Promise<{ surpriseBook: Object, books: Array<Object>, subject: string }>}
+ */
+export async function fetchRandomBook() {
+  const randomSubject = POPULAR_SUBJECTS[Math.floor(Math.random() * POPULAR_SUBJECTS.length)];
+  const books = await searchBooks(randomSubject);
+
+  if (!books || books.length === 0) {
+    throw new Error('NOTHING_FOUND');
+  }
+
+  // Pick a random book from the top results (up to first 15 for relevance)
+  const candidatePool = books.slice(0, Math.min(books.length, 15));
+  const surpriseBook = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+
+  return {
+    surpriseBook,
+    books,
+    subject: randomSubject
+  };
+}
+
