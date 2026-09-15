@@ -6,9 +6,10 @@ import {
   getBookmarkIconSvg,
   getOpenBookIconSvg,
   getNoteIconSvg,
-  getStarIconSvg
+  getStarIconSvg,
+  getShareIconSvg
 } from './icons.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, shareBookDetails, showGlobalToast } from '../utils.js';
 
 export class BookModal {
   /**
@@ -145,6 +146,10 @@ export class BookModal {
                 ${getHeartIconSvg()}
                 <span>${isSaved ? 'Saved to Favorites' : 'Add to Favorites'}</span>
               </button>
+              <button class="modal-share-btn" title="Share book details and link">
+                ${getShareIconSvg()}
+                <span>Share Book</span>
+              </button>
             </div>
 
             <div class="modal-section modal-status-section" style="${isSaved ? '' : 'display:none;'}">
@@ -252,6 +257,20 @@ export class BookModal {
         }
       });
     }
+
+    // Share button
+    const shareBtn = this.container.querySelector('.modal-share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async () => {
+        const success = await shareBookDetails(this.activeBook);
+        if (success) {
+          showGlobalToast('Copied book details to clipboard! 📋', 'success');
+        } else {
+          showGlobalToast('Unable to copy book details.', 'error');
+        }
+      });
+    }
+
 
     // Reading status pills
     const statusPills = this.container.querySelectorAll('.status-pill');

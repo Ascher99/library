@@ -1,5 +1,5 @@
-import { getHeartIconSvg, getNoteIconSvg } from './icons.js';
-import { escapeHtml } from '../utils.js';
+import { getHeartIconSvg, getNoteIconSvg, getShareIconSvg } from './icons.js';
+import { escapeHtml, shareBookDetails, showGlobalToast } from '../utils.js';
 
 export class BookCard {
   /**
@@ -63,9 +63,14 @@ export class BookCard {
         ${coverHtml}
         ${placeholderHtml}
         ${statusBadgeHtml}
-        <button class="fav-toggle-btn ${this.isSaved ? 'saved' : ''}" aria-label="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}" title="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}">
-          ${getHeartIconSvg()}
-        </button>
+        <div class="card-actions-group">
+          <button class="card-action-btn share-btn" aria-label="Share book details" title="Share book details">
+            ${getShareIconSvg()}
+          </button>
+          <button class="fav-toggle-btn ${this.isSaved ? 'saved' : ''}" aria-label="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}" title="${this.isSaved ? 'Remove from favorites' : 'Add to favorites'}">
+            ${getHeartIconSvg()}
+          </button>
+        </div>
       </div>
       <div class="card-details">
         <h4 class="card-title" title="${escapeHtml(this.book.title)}">
@@ -85,6 +90,17 @@ export class BookCard {
       }
     });
 
+    const shareBtn = card.querySelector('.share-btn');
+    shareBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const success = await shareBookDetails(this.book);
+      if (success) {
+        showGlobalToast('Copied book details to clipboard! 📋', 'success');
+      } else {
+        showGlobalToast('Unable to copy book details.', 'error');
+      }
+    });
+
     card.addEventListener('click', () => {
       if (this.onSelectBook) {
         this.onSelectBook(this.book);
@@ -94,6 +110,7 @@ export class BookCard {
     this.element = card;
     return card;
   }
+
 
   /**
    * Update the favorite badge state on this card without complete re-rendering.
