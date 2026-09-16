@@ -25,6 +25,26 @@ export class SearchBar {
   }
 
   bindEvents() {
+    // Global keyboard shortcut ('/' to focus search bar)
+    document.addEventListener('keydown', (e) => {
+      const activeElement = document.activeElement;
+      const isEditable = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        activeElement.isContentEditable
+      );
+
+      if (e.key === '/' && !isEditable) {
+        e.preventDefault();
+        this.input.focus();
+        this.input.select();
+      } else if (e.key === 'Escape' && activeElement === this.input) {
+        this.clear();
+        this.input.blur();
+      }
+    });
+
     // Main search button click
     this.searchBtn.addEventListener('click', () => {
       this.cancelPendingSearch();

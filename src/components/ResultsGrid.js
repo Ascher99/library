@@ -37,7 +37,6 @@ export class ResultsGrid {
     this.searchResults = [];
     this.authorFilter = '';
     this.sortOption = 'default';
-    this.cardInstances = []; // Cache BookCard instances for quick state updates
 
     this.init();
   }
@@ -123,7 +122,6 @@ export class ResultsGrid {
    */
   render() {
     this.grid.innerHTML = '';
-    this.cardInstances = [];
 
     let filteredDocs = [...this.searchResults];
     if (this.authorFilter.trim()) {
@@ -173,7 +171,6 @@ export class ResultsGrid {
       });
       
       fragment.appendChild(cardInstance.render());
-      this.cardInstances.push(cardInstance);
     });
     this.grid.appendChild(fragment);
   }

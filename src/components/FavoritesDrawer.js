@@ -207,15 +207,6 @@ export class FavoritesDrawer {
     this.list.innerHTML = '';
     const totalCount = this.favorites.length;
 
-    // Compute library statistics
-    const readingCount = this.favorites.filter(f => f.readingStatus === 'reading').length;
-    const completedCount = this.favorites.filter(f => f.readingStatus === 'completed').length;
-    const wantCount = this.favorites.filter(f => (f.readingStatus || 'want_to_read') === 'want_to_read').length;
-    const ratedBooks = this.favorites.filter(f => f.rating > 0);
-    const avgRating = ratedBooks.length > 0
-      ? (ratedBooks.reduce((sum, f) => sum + f.rating, 0) / ratedBooks.length).toFixed(1)
-      : null;
-
     const stats = getReadingStats();
 
     if (this.statsBar) {
