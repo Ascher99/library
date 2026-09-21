@@ -134,6 +134,64 @@ export function exportFavoritesJSON() {
 }
 
 /**
+ * Exports current favorites list as a downloadable Markdown (.md) reading journal.
+ */
+export function exportFavoritesMarkdown() {
+  const stats = getReadingStats();
+  const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  
+  let md = `# 📚 My Library Reading List\n\n`;
+  md += `*Generated on ${dateStr}*\n\n`;
+  md += `## 📊 Reading Summary\n\n`;
+  md += `- **Total Books Saved:** ${stats.total}\n`;
+  md += `- **Completed:** ${stats.completed} / ${stats.targetGoal} books (${stats.progressPct}% of goal)\n`;
+  md += `- **Currently Reading:** ${stats.reading}\n`;
+  md += `- **Want to Read:** ${stats.wantToRead}\n`;
+  if (stats.avgRating) {
+    md += `- **Average Rating:** ${stats.avgRating} / 5 ⭐\n`;
+  }
+  md += `\n---\n\n`;
+
+  const statusSections = [
+    { key: 'reading', title: '📖 Currently Reading' },
+    { key: 'want_to_read', title: '🔖 Want to Read' },
+    { key: 'completed', title: '✅ Completed' }
+  ];
+
+  statusSections.forEach(({ key, title }) => {
+    const booksInStatus = favoritesCache.filter(b => (b.readingStatus || 'want_to_read') === key);
+    if (booksInStatus.length > 0) {
+      md += `## ${title} (${booksInStatus.length})\n\n`;
+      booksInStatus.forEach(book => {
+        const authors = Array.isArray(book.authors) && book.authors.length ? book.authors.join(', ') : 'Unknown Author';
+        const link = book.id.startsWith('/') ? `https://openlibrary.org${book.id}` : `https://openlibrary.org/${book.id}`;
+        const ratingStars = book.rating > 0 ? '⭐'.repeat(book.rating) : 'Unrated';
+        
+        md += `### [${book.title}](${link})\n`;
+        md += `- **Author(s):** ${authors}\n`;
+        md += `- **Published:** ${book.publishYear || 'Unknown'}\n`;
+        md += `- **Rating:** ${ratingStars}\n`;
+        if (book.notes && book.notes.trim()) {
+          md += `- **Notes & Quotes:**\n> ${book.notes.trim().replace(/\n/g, '\n> ')}\n`;
+        }
+        md += `\n`;
+      });
+    }
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'library-reading-list.md';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+
+/**
  * Imports books from a JSON string into favorites cache and localStorage.
  * Merges new items with existing favorites without creating duplicate IDs.
  * @param {string} jsonText The raw JSON content from imported file

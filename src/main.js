@@ -9,6 +9,7 @@ import { SearchBar } from './components/SearchBar.js';
 import { ResultsGrid } from './components/ResultsGrid.js';
 import { FavoritesDrawer } from './components/FavoritesDrawer.js';
 import { BookModal } from './components/BookModal.js';
+import { SearchHistory } from './components/SearchHistory.js';
 
 // ==========================================================================
 // Application Components & Orchestration
@@ -18,6 +19,7 @@ let resultsGrid = null;
 let favoritesDrawer = null;
 let themeSwitcher = null;
 let bookModal = null;
+let searchHistory = null;
 
 async function performSearch(query) {
   const queryText = query ? query.trim() : '';
@@ -34,6 +36,10 @@ async function performSearch(query) {
     
     // If request was aborted internally, books will be null
     if (books === null) return;
+
+    if (searchHistory) {
+      searchHistory.add(queryText);
+    }
 
     resultsGrid.updateResults(books);
   } catch (error) {
@@ -158,6 +164,7 @@ function init() {
       emptyMsg: document.getElementById('favorites-empty-msg'),
       list: document.getElementById('favorites-list'),
       exportBtn: document.getElementById('export-favs-btn'),
+      exportMdBtn: document.getElementById('export-favs-md-btn'),
       importBtn: document.getElementById('import-favs-btn'),
       importInput: document.getElementById('import-favs-input'),
       toastContainer: document.getElementById('favorites-toast')
@@ -178,7 +185,18 @@ function init() {
     }
   );
 
-  // 6. Initialize Genre Quick Topic Chips
+  // 6. Initialize Recent Searches History Component
+  const recentSearchesContainer = document.getElementById('recent-searches');
+  if (recentSearchesContainer) {
+    searchHistory = new SearchHistory(recentSearchesContainer, {
+      onSelect: (query) => {
+        searchBar.setQuery(query);
+        performSearch(query);
+      }
+    });
+  }
+
+  // 7. Initialize Genre Quick Topic Chips
   const genreChipsContainer = document.getElementById('genre-chips');
   if (genreChipsContainer) {
     genreChipsContainer.addEventListener('click', (e) => {
@@ -194,7 +212,7 @@ function init() {
     });
   }
 
-  // 7. Initialize Surprise Me Button
+  // 8. Initialize Surprise Me Button
   const surpriseBtn = document.getElementById('surprise-btn');
   if (surpriseBtn) {
     surpriseBtn.addEventListener('click', () => {

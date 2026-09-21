@@ -1680,6 +1680,122 @@ a:hover {
 }
 
 /* ==========================================================================
+   Recent Searches History
+   ========================================================================== */
+.recent-searches-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  width: 100%;
+  max-width: 680px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.recent-chips-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 4px;
+}
+
+.recent-chips-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast) ease;
+  user-select: none;
+}
+
+.recent-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+.recent-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.recent-chip-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.recent-chip:hover .recent-chip-icon {
+  color: var(--accent);
+}
+
+.recent-chip-text {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-chip-remove {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 2px;
+  margin-left: 2px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast) ease, transform var(--transition-fast) ease;
+}
+
+.recent-chip-remove:hover {
+  color: var(--danger);
+  transform: scale(1.25);
+}
+
+.clear-history-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast) ease;
+}
+
+.clear-history-btn:hover {
+  color: var(--danger);
+}
+
+/* ==========================================================================
    Genre / Subject Discovery Chips
    ========================================================================== */
 .genre-chips-container {

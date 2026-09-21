@@ -1,6 +1,6 @@
 import { FavoriteItem } from './FavoriteItem.js';
 import { debounce } from '../utils.js';
-import { exportFavoritesJSON, importFavoritesJSON, getReadingGoal, setReadingGoal, getReadingStats } from '../favorites.js';
+import { exportFavoritesJSON, exportFavoritesMarkdown, importFavoritesJSON, getReadingGoal, setReadingGoal, getReadingStats } from '../favorites.js';
 
 export class FavoritesDrawer {
   /**
@@ -16,6 +16,7 @@ export class FavoritesDrawer {
    * @param {HTMLElement} elements.emptyMsg The empty message container
    * @param {HTMLElement} elements.list The favorites list items container
    * @param {HTMLElement} [elements.exportBtn] Button to trigger JSON export
+   * @param {HTMLElement} [elements.exportMdBtn] Button to trigger Markdown export
    * @param {HTMLElement} [elements.importBtn] Button to trigger JSON import
    * @param {HTMLInputElement} [elements.importInput] Hidden file input element
    * @param {HTMLElement} [elements.toastContainer] Toast message banner container
@@ -25,7 +26,7 @@ export class FavoritesDrawer {
    * @param {Function} [callbacks.onImportSuccess] Triggered when books are imported successfully
    */
   constructor(
-    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, statusTabsContainer, statsBar, readingGoalWidget, emptyMsg, list, exportBtn, importBtn, importInput, toastContainer },
+    { section, badgeSubtitle, fabBadge, closeBtn, toggleFab, filterContainer, filterInput, statusTabsContainer, statsBar, readingGoalWidget, emptyMsg, list, exportBtn, exportMdBtn, importBtn, importInput, toastContainer },
     { onRemoveFavorite, onSelectBook, onImportSuccess }
   ) {
     this.section = section;
@@ -41,6 +42,7 @@ export class FavoritesDrawer {
     this.emptyMsg = emptyMsg;
     this.list = list;
     this.exportBtn = exportBtn;
+    this.exportMdBtn = exportMdBtn;
     this.importBtn = importBtn;
     this.importInput = importInput;
     this.toastContainer = toastContainer;
@@ -100,6 +102,18 @@ export class FavoritesDrawer {
         }
         exportFavoritesJSON();
         this.showToast(`Exported ${this.favorites.length} favorite book(s)!`, 'success');
+      });
+    }
+
+    // Export Markdown Action
+    if (this.exportMdBtn) {
+      this.exportMdBtn.addEventListener('click', () => {
+        if (this.favorites.length === 0) {
+          this.showToast('No favorites to export.', 'error');
+          return;
+        }
+        exportFavoritesMarkdown();
+        this.showToast(`Exported ${this.favorites.length} book(s) to Markdown!`, 'success');
       });
     }
 
